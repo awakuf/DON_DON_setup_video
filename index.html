@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>どんどん市 | 設営ガイド</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #020617;
+            --card-bg: #1e293b;
+            --accent: #10b981;
+            --secondary: #3b82f6;
+            --danger: #f43f5e;
+            --warning: #fbbf24;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --nav-height: 80px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: 'Outfit', 'Noto Sans JP', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        #app { display: flex; flex-direction: column; height: 100vh; }
+        header {
+            padding: 1rem 1.5rem;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--accent); }
+        #step-viewport {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            padding-bottom: calc(var(--nav-height) + 2rem);
+        }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; background: rgba(16, 185, 129, 0.2); color: var(--accent); margin-bottom: 1rem; }
+        .title { font-size: 2.2rem; font-weight: 800; margin-bottom: 1.5rem; }
+        .info-grid { display: grid; gap: 1rem; margin-bottom: 2rem; }
+        .info-card { background: var(--card-bg); padding: 1.2rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .info-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .info-value { font-size: 1.1rem; font-weight: 700; }
+        .info-value.safety { color: var(--danger); }
+        .description { font-size: 1.1rem; border-left: 4px solid var(--accent); padding-left: 1.2rem; margin-bottom: 2rem; }
+        .visual-container {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            background: #000;
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+        }
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
+            background: rgba(15, 23, 42, 0.95); display: flex; justify-content: space-between; align-items: center; padding: 0 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-btn { background: none; border: none; color: var(--text); font-weight: 700; padding: 1rem; }
+        .next-btn { background: var(--accent); color: #000; padding: 0.8rem 1.5rem; border-radius: 16px; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <header><div class="logo">DONDON-ICHI</div><div id="stepIndicator">1 / 10</div></header>
+    <main id="step-viewport"></main>
+    <nav class="bottom-nav">
+        <button class="nav-btn" id="prevBtn" onclick="changeStep(-1)">← 戻る</button>
+        <button class="nav-btn next-btn" id="nextBtn" onclick="changeStep(1)">次へ →</button>
+    </nav>
+</div>
+<script>
+    const stepsData = [
+        { title: "脚フレーム展開", people: "2人", tips: "垂直を保ち均等に展開", safety: "指挟み・転倒防止", desc: "折りたたまれたX型脚フレームを左右に広げる。", img: "snapshots/step1.jpg" },
+        { title: "下部補強固定", people: "1〜2人", tips: "工具不要・確実に締結", safety: "緩み・抜け確認", desc: "下部連結棒を差し込み蝶ボルトで手締め固定。", img: "snapshots/step2.jpg" },
+        { title: "天板搬送", people: "2人", tips: "水平を保って慎重に移動", safety: "落下・接触防止", desc: "近傍に置かれている天板を2人で持ち上げて搬送。", img: "snapshots/step3.jpg" },
+        { title: "天板設置", people: "2人", tips: "凸凹を合わせて完全装着", safety: "浮き・ズレ確認", desc: "天板を載せてスライド嵌合（かんごう）。", img: "snapshots/step4.jpg" },
+        { title: "側面ロック", people: "1〜2人", tips: "横剛性を確保する重要工程", safety: "左右対称・固定確認", desc: "サイドパーツ（幕板）を取り付け固定。", img: "snapshots/step5.jpg" },
+        { title: "屋根搬送", people: "2人", tips: "両端保持・水平移動", safety: "看板破損防止", desc: "屋根ユニット（看板付）を2人で運搬。", img: "snapshots/step6.jpg" },
+        { title: "屋根持上げ", people: "2人", tips: "声掛け・同時動作必須", safety: "転倒・落下防止", desc: "屋根を持ち上げ支柱を受け部へ挿入。", img: "snapshots/step7.jpg" },
+        { title: "支柱固定", people: "2人", tips: "穴位置の精密合わせ", safety: "仮締め→本締め", desc: "高さ穴を合わせボルト＋蝶ナットで固定。", img: "snapshots/step8.jpg" },
+        { title: "増し締め", people: "1人", tips: "緩みゼロにする", safety: "全点触診確認", desc: "全ボルト・接続部の再締結。", img: "snapshots/step9.jpg" },
+        { title: "最終確認", people: "1人", tips: "使用前最終判定", safety: "看板向きの最終確認", desc: "看板向き・全体状態確認。", img: "snapshots/step10.jpg" }
+    ];
+    let currentStep = 0;
+    function render() {
+        const step = stepsData[currentStep];
+        document.getElementById('step-viewport').innerHTML = `
+            <div class="badge">Step ${currentStep + 1} / 10</div>
+            <h1 class="title">${step.title}</h1>
+            <div class="info-grid">
+                <div class="info-card"><div class="info-label">推奨人数</div><div class="info-value">${step.people}</div></div>
+                <div class="info-card"><div class="info-label">安全チェック</div><div class="info-value safety">${step.safety}</div></div>
+            </div>
+            <p class="description">${step.desc}</p>
+            <div class="visual-container">
+                <img src="${step.img}" alt="${step.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <span>[写真準備中: ${step.title}]</span>
+            </div>
+        `;
+        document.getElementById('stepIndicator').innerText = `${currentStep + 1} / 10`;
+        document.getElementById('prevBtn').disabled = currentStep === 0;
+    }
+    function changeStep(dir) {
+        currentStep += dir;
+        if (currentStep < 0) currentStep = 0;
+        if (currentStep >= 10) currentStep = 9;
+        render();
+    }
+    render();
+</script>
+</body>
+</html>
